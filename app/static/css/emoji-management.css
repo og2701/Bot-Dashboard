@@ -1,0 +1,65 @@
+.emoji-management {
+    padding: 20px;
+    background-color: var(--main-bg-color); /* Ensure background color is set */
+    height: 100%;
+    overflow-y: auto; /* Enable scrolling */
+}
+
+.emoji-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+    background-color: var(--message-bg-color);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.emoji-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 5px;
+}
+
+.emoji-name {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+.emoji-search {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg-color);
+    color: var(--text-color);
+    border-radius: 5px;
+}
+
+.success-message {
+    background-color: #5cb85c;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.error-message {
+    background-color: #d9534f;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 5px;
+}

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ bot_name }} Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/message.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings-panel.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/server-stats.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/emoji-management.css') }}">
+    <link rel="icon" href="{{ bot_avatar_url }}" type="image/png">
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="home-button" onclick="deselectChannel()">Home</button>
+                <h2>Channels</h2>
+            </div>
+            <input type="text" id="search" placeholder="Search channels">
+            {% for category, channels in categories.items() %}
+                <div class="category">
+                    <h3>{{ category }}</h3>
+                    <ul>
+                        {% for id, name in channels %}
+                            <li data-id="{{ id }}" onclick="selectChannel('{{ id }}', '{{ name }}')">{{ name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="header-container">
+                    <img src="{{ bot_avatar_url }}" alt="Bot Avatar">
+                    <h1>{{ bot_name }} Dashboard</h1>
+                </div>
+                <div class="settings-container">
+                    <button class="settings-button" onclick="toggleSettingsPanel()">
+                        ⚙️
+                    </button>
+                    <div id="settings-panel" class="settings-panel">
+                        <label for="theme-toggle">
+                            <span>Dark Mode</span>
+                            <input type="checkbox" id="theme-toggle">
+                        </label>
+                        <div class="theme-buttons">
+                            <button class="theme-button" id="theme-red">Red</button>
+                            <button class="theme-button" id="theme-blue">Blue</button>
+                            <button class="theme-button" id="theme-green">Green</button>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('auth.logout') }}" style="margin-left: 20px; text-decoration: none; color: var(--button-text-color); background-color: var(--button-bg-color); padding: 5px 10px; border-radius: 5px;">Logout</a>
+
+                </div>
+            </div>
+            <div id="home-info" class="home-info">
+                <h2>Server Information</h2>
+                <div class="server-info-container">
+                    <div class="server-stats">
+                        <div class="stat-box">
+                            <p>👥 Member Count</p>
+                            <p class="stat-value">{{ server_info.member_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>#️⃣ Channel Count</p>
+                            <p class="stat-value">{{ server_info.channel_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>💬 Text Channel Count</p>
+                            <p class="stat-value">{{ server_info.text_channel_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>🔊 Voice Channel Count</p>
+                            <p class="stat-value">{{ server_info.voice_channel_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>📂 Category Count</p>
+                            <p class="stat-value">{{ server_info.category_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>🎨 Role Count</p>
+                            <p class="stat-value">{{ server_info.role_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>😀 Emoji Count</p>
+                            <p class="stat-value">{{ server_info.emoji_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>📑 Sticker Count</p>
+                            <p class="stat-value">{{ server_info.sticker_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>🤖 Bot Count</p>
+                            <p class="stat-value">{{ server_info.bot_count }}</p>
+                        </div>
+                        <div class="stat-box">
+                            <p>👤 Human Count</p>
+                            <p class="stat-value">{{ server_info.human_count }}</p>
+                        </div>
+                    </div>
+                    <button class="manage-emojis-button" onclick="showEmojiManagement()">Manage Emojis</button>
+                </div>
+            </div>
+            <div id="emoji-management" class="emoji-management" style="display: none;">
+                <h2>Emoji Management</h2>
+                <form id="emoji-upload-form" enctype="multipart/form-data" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label for="emoji-file">Upload Emoji:</label>
+                        <input type="file" id="emoji-file" name="emoji-file" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="emoji-name">Emoji Name:</label>
+                        <input type="text" id="emoji-name" name="emoji-name">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Upload</button>
+                    </div>
+                </form>
+                <input type="text" id="emoji-search" class="emoji-search" placeholder="Search emojis" oninput="filterEmojis()">
+                <div id="emoji-list" class="emoji-grid"></div>
+            </div>
+            <div id="message-list" class="message-list" style="display: none;"></div>
+            <div id="message-form" class="message-form" style="display: none;">
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="channel">Selected Channel:</label>
+                        <span id="selected_channel">None</span>
+                        <input type="hidden" id="channel_id" name="channel_id" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <input type="text" id="message" name="message">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/message.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/emoji.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script>
+        function toggleSettingsPanel() {
+            const settingsPanel = document.getElementById('settings-panel');
+            settingsPanel.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

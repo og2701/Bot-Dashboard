@@ -1,0 +1,131 @@
+/* Light mode variables */
+:root {
+    --sidebar-bg-color: #e3f2fd; /* Light Blue */
+    --sidebar-text-color: #0b0c0c;
+    --sidebar-category-bg-color: #90caf9; /* Blue */
+    --sidebar-category-text-color: #0b0c0c;
+    --sidebar-item-bg-color: #bbdefb; /* Light Blue */
+    --sidebar-item-hover-bg-color: #64b5f6; /* Blue */
+    --main-bg-color: #ffffff;
+    --text-color: #0b0c0c;
+    --border-color: #b1b4b6;
+    --input-bg-color: #ffffff;
+    --placeholder-color: #6f777b;
+    --button-bg-color: #2196f3; /* Blue */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #1976d2; /* Dark Blue */
+    --message-list-bg-color: #e3f2fd; /* Light Blue */
+    --message-bg-color: #ffffff;
+    --stat-box-bg-color: #bbdefb; /* Light Blue */
+    --stat-value-color: #0b0c0c;
+}
+
+/* Dark mode variables */
+body.dark-mode {
+    --sidebar-bg-color: #1e272e; /* Dark Blue */
+    --sidebar-text-color: #ffffff;
+    --sidebar-category-bg-color: #3d567a; /* Blue */
+    --sidebar-category-text-color: #ffffff;
+    --sidebar-item-bg-color: #3a3f44;
+    --sidebar-item-hover-bg-color: #5865f2; /* Brand Blue */
+    --main-bg-color: #131a21;
+    --text-color: #dcddde;
+    --border-color: #4f545c;
+    --input-bg-color: #1e272e;
+    --placeholder-color: #72767d;
+    --button-bg-color: #3d567a; /* Blue */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #5865f2; /* Brand Blue */
+    --message-list-bg-color: #1e272e;
+    --message-bg-color: #3a3f44;
+    --stat-box-bg-color: #3d567a; /* Blue */
+    --stat-value-color: #ffffff; /* White */
+}
+
+/* Red theme variables */
+body.red-theme {
+    --sidebar-bg-color: #ffebee; /* Light Red */
+    --sidebar-text-color: #0b0c0c;
+    --sidebar-category-bg-color: #ef9a9a; /* Red */
+    --sidebar-category-text-color: #0b0c0c;
+    --sidebar-item-bg-color: #ffcdd2; /* Light Red */
+    --sidebar-item-hover-bg-color: #e57373; /* Red */
+    --main-bg-color: #ffffff;
+    --text-color: #0b0c0c;
+    --border-color: #b1b4b6;
+    --input-bg-color: #ffffff;
+    --placeholder-color: #6f777b;
+    --button-bg-color: #f44336; /* Red */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #d32f2f; /* Dark Red */
+    --message-list-bg-color: #ffebee; /* Light Red */
+    --message-bg-color: #ffffff;
+    --stat-box-bg-color: #ffcdd2; /* Light Red */
+    --stat-value-color: #0b0c0c;
+}
+
+/* Dark Red theme variables */
+body.dark-mode.red-theme {
+    --sidebar-bg-color: #3e2723; /* Dark Red */
+    --sidebar-text-color: #ffffff;
+    --sidebar-category-bg-color: #5d4037; /* Red */
+    --sidebar-category-text-color: #ffffff;
+    --sidebar-item-bg-color: #4e342e;
+    --sidebar-item-hover-bg-color: #d84315; /* Orange */
+    --main-bg-color: #2d1f1c;
+    --text-color: #dcddde;
+    --border-color: #4f545c;
+    --input-bg-color: #3e2723;
+    --placeholder-color: #72767d;
+    --button-bg-color: #5d4037; /* Red */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #d84315; /* Orange */
+    --message-list-bg-color: #3e2723;
+    --message-bg-color: #4e342e;
+    --stat-box-bg-color: #5d4037; /* Red */
+    --stat-value-color: #ffffff; /* White */
+}
+
+/* Green theme variables */
+body.green-theme {
+    --sidebar-bg-color: #e8f5e9; /* Light Green */
+    --sidebar-text-color: #0b0c0c;
+    --sidebar-category-bg-color: #a5d6a7; /* Green */
+    --sidebar-category-text-color: #0b0c0c;
+    --sidebar-item-bg-color: #c8e6c9; /* Light Green */
+    --sidebar-item-hover-bg-color: #81c784; /* Green */
+    --main-bg-color: #ffffff;
+    --text-color: #0b0c0c;
+    --border-color: #b1b4b6;
+    --input-bg-color: #ffffff;
+    --placeholder-color: #6f777b;
+    --button-bg-color: #4caf50; /* Green */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #388e3c; /* Dark Green */
+    --message-list-bg-color: #e8f5e9; /* Light Green */
+    --message-bg-color: #ffffff;
+    --stat-box-bg-color: #c8e6c9; /* Light Green */
+    --stat-value-color: #0b0c0c;
+}
+
+/* Dark Green theme variables */
+body.dark-mode.green-theme {
+    --sidebar-bg-color: #1b5e20; /* Dark Green */
+    --sidebar-text-color: #ffffff;
+    --sidebar-category-bg-color: #33691e; /* Green */
+    --sidebar-category-text-color: #ffffff;
+    --sidebar-item-bg-color: #2e7d32;
+    --sidebar-item-hover-bg-color: #00c853; /* Light Green */
+    --main-bg-color: #10271b;
+    --text-color: #dcddde;
+    --border-color: #4f545c;
+    --input-bg-color: #1b5e20;
+    --placeholder-color: #72767d;
+    --button-bg-color: #33691e; /* Green */
+    --button-text-color: #ffffff;
+    --button-hover-bg-color: #00c853; /* Light Green */
+    --message-list-bg-color: #1b5e20;
+    --message-bg-color: #2e7d32;
+    --stat-box-bg-color: #33691e; /* Green */
+    --stat-value-color: #ffffff; /* White */
+}
