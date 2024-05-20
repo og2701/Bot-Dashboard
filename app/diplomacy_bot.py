@@ -5,8 +5,9 @@ import aiohttp
 import asyncio
 from flask import current_app
 from threading import Thread
+import datetime
 
-# In-memory storage for server data and active sessions
+#registered servers and active sessions
 servers = {}
 active_sessions = {}
 
@@ -56,8 +57,15 @@ class DiplomacyClient(Client):
                         if message.content.strip():
                             async with aiohttp.ClientSession() as session_http:
                                 webhook = discord.Webhook.from_url(target_webhook_url, session=session_http)
-                                await webhook.send(content=message.content, username=f"{message.author.display_name} ({message.guild.name})")
+                                await webhook.send(
+                                    content=message.content,
+                                    username=f"{message.author.display_name} ({message.guild.name})",
+                                    avatar_url=message.author.avatar.url
+                                )
                                 active_session['last_message_time'] = discord.utils.utcnow()
+                                timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                                log_message = f"{timestamp} | {message.author.display_name} ({message.guild.name}): {message.content}\n"
+                                active_session['log'].append(log_message)
 
     async def get_or_create_webhook(self, channel, name):
         webhooks = await channel.webhooks()
@@ -74,7 +82,7 @@ class DiplomacyClient(Client):
             now = discord.utils.utcnow()
             to_remove = []
             for (guild_id_a, guild_id_b), active_session in list(active_sessions.items()):
-                if (now - active_session['last_message_time']).total_seconds() > 30:  # 30 seconds timeout
+                if (now - active_session['last_message_time']).total_seconds() > 30: #30 sec inactivity timeout --> hangup
                     to_remove.append((guild_id_a, guild_id_b))
                     try:
                         await self.get_channel(servers[guild_id_a]['channel']).send(
@@ -88,10 +96,21 @@ class DiplomacyClient(Client):
                         )
                     except Exception as e:
                         print(f"Failed to send message to guild {guild_id_b}: {e}")
+                    await self.save_and_send_log(guild_id_a, guild_id_b, active_session)
             for key in to_remove:
                 del active_sessions[key]
             await asyncio.sleep(30)
 
+    async def save_and_send_log(self, guild_id_a, guild_id_b, active_session):
+        log_filename = f"diplomacy_log_{guild_id_a}_{guild_id_b}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.log"
+        with open(f'/tmp/{log_filename}', 'w') as log_file:
+            log_file.writelines(active_session['log'])
+
+        log_channel = self.get_channel(1242202414094745671)
+        if log_channel:
+            await log_channel.send(file=discord.File(f'/tmp/{log_filename}'))
+        else:
+            print("Log channel not found.")
 
 client = DiplomacyClient()
 tree = app_commands.CommandTree(client)
@@ -99,13 +118,11 @@ tree = app_commands.CommandTree(client)
 @tree.command(name="register", description="Register a server for diplomacy")
 async def register(interaction: Interaction):
     try:
-        await interaction.response.defer()  # Acknowledge the interaction immediately
+        await interaction.response.defer() #this bs not needed if i run this bot seperately
     except discord.errors.NotFound:
-        # Interaction has already expired or been acknowledged
         print(f"Failed to defer interaction {interaction.id}: Interaction not found")
         return
     except Exception as e:
-        # Log any other exceptions
         print(f"Unexpected error when deferring interaction {interaction.id}: {e}")
         return
 
@@ -121,7 +138,6 @@ async def register(interaction: Interaction):
             embed=discord.Embed(description=f"{interaction.guild.name} is now registered with the existing diplomacy channel.", color=discord.Color.blue())
         )
     else:
-        # Set channel permissions so that only the registering user and the bot can see it
         overwrites = {
             interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             interaction.user: discord.PermissionOverwrite(read_messages=True),
@@ -138,7 +154,7 @@ async def register(interaction: Interaction):
 @tree.command(name="call", description="Initiate a diplomatic chat with another server")
 async def call(interaction: Interaction, target_guild_id: str):
     try:
-        await interaction.response.defer()  # Acknowledge the interaction immediately
+        await interaction.response.defer()
     except discord.errors.NotFound:
         print(f"Failed to defer interaction {interaction.id}: Interaction not found")
         return
@@ -147,12 +163,14 @@ async def call(interaction: Interaction, target_guild_id: str):
         return
 
     target_guild_id = int(target_guild_id)
+    print(f"Attempting to call {target_guild_id} from {interaction.guild.id}")
+    print(f"Servers registered: {servers}")
+
     if interaction.guild.id in servers and target_guild_id in servers:
         target_guild = client.get_guild(target_guild_id)
         if target_guild:
             target_channel = target_guild.get_channel(servers[target_guild_id]['channel'])
 
-            # Create buttons for accept and deny
             buttons = [
                 discord.ui.Button(style=discord.ButtonStyle.green, label="Accept", custom_id="accept"),
                 discord.ui.Button(style=discord.ButtonStyle.red, label="Deny", custom_id="deny")
@@ -170,7 +188,8 @@ async def call(interaction: Interaction, target_guild_id: str):
             active_sessions[(interaction.guild.id, target_guild_id)] = {
                 'active': False, 
                 'last_message_time': discord.utils.utcnow(), 
-                'initiator': interaction.guild.id
+                'initiator': interaction.guild.id,
+                'log': [f"Connection initiated by {interaction.guild.name} at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"]
             }
             await interaction.followup.send(
                 embed=discord.Embed(description=f"Calling {target_guild.name} for a diplomatic chat.", color=discord.Color.blue())
@@ -183,10 +202,6 @@ async def call(interaction: Interaction, target_guild_id: str):
         await interaction.followup.send(
             embed=discord.Embed(description="Both servers need to be registered for diplomacy.", color=discord.Color.red())
         )
-
-
-
-
 
 @client.event
 async def on_interaction(interaction: Interaction):
@@ -206,6 +221,7 @@ async def on_interaction(interaction: Interaction):
                         active_session['webhook_a'] = webhook_a.url
                         active_session['webhook_b'] = webhook_b.url
                         active_session['active'] = True
+                        active_session['log'].append(f"Connection accepted by {interaction.guild.name} at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
 
                         embed = discord.Embed(
                             title="Diplomatic Chat Accepted",
@@ -214,7 +230,6 @@ async def on_interaction(interaction: Interaction):
                         )
                         await original_message.edit(embed=embed, view=None)
 
-                        # Notify the other server
                         target_channel = client.get_channel(servers[target_guild_id]['channel'])
                         await target_channel.send(embed=discord.Embed(
                             description=f"{interaction.guild.name} has accepted the diplomatic chat request with {client.get_guild(target_guild_id).name}.",
@@ -222,6 +237,8 @@ async def on_interaction(interaction: Interaction):
                         ))
 
                     elif custom_id == "deny":
+                        active_session['log'].append(f"Connection denied by {interaction.guild.name} at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                        await client.save_and_send_log(guild_id_a, guild_id_b, active_session)
                         del active_sessions[(guild_id_a, guild_id_b)]
 
                         embed = discord.Embed(
@@ -230,21 +247,18 @@ async def on_interaction(interaction: Interaction):
                             color=discord.Color.red())
                         await original_message.edit(embed=embed, view=None)
 
-                        # Notify the other server
                         target_channel = client.get_channel(servers[target_guild_id]['channel'])
                         await target_channel.send(embed=discord.Embed(
                             description=f"{client.get_guild(target_guild_id).name} has denied the diplomatic chat request with {interaction.guild.name}.",
                             color=discord.Color.red())
                         )
 
-                    break  # Exit the loop after processing the interaction
-
-
+                    break
 
 @tree.command(name="hangup", description="Hang up a diplomatic chat")
 async def hangup(interaction: Interaction):
     try:
-        await interaction.response.defer()  # Acknowledge the interaction immediately
+        await interaction.response.defer()
     except discord.errors.NotFound:
         print(f"Failed to defer interaction {interaction.id}: Interaction not found")
         return
@@ -255,7 +269,6 @@ async def hangup(interaction: Interaction):
     guild_id = interaction.guild.id
     active_session_found = False
 
-    # Use a list to collect keys to remove after iteration to avoid modifying the dict during iteration
     to_remove = []
 
     for (guild_id_a, guild_id_b), active_session in active_sessions.items():
@@ -272,6 +285,9 @@ async def hangup(interaction: Interaction):
             active_session_found = True
 
     for key in to_remove:
+        active_session = active_sessions[key]
+        active_session['log'].append(f"Connection ended by {interaction.guild.name} at {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        await client.save_and_send_log(*key, active_session)
         del active_sessions[key]
 
     if active_session_found:
@@ -282,10 +298,6 @@ async def hangup(interaction: Interaction):
         await interaction.followup.send(
             embed=discord.Embed(description="There is no active diplomatic chat session to hang up.", color=discord.Color.red())
         )
-
-
-
-
 
 def start_bot(app):
     def run_bot():

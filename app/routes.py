@@ -10,10 +10,10 @@ def index():
         return redirect(url_for('auth.login'))
 
     while not client.is_ready():
-        asyncio.sleep(1)  # Wait until the bot is ready
+        asyncio.sleep(1)
 
-    bot_name = client.user.name  # Fetch the bot's username
-    bot_avatar_url = client.user.avatar.url  # Fetch the bot's avatar URL
+    bot_name = client.user.name 
+    bot_avatar_url = client.user.avatar.url
 
     categories, server_info = get_guild_info(client, current_app.config['GUILD_ID'])
 

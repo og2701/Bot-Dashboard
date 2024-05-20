@@ -1,9 +1,9 @@
 function showEmojiManagement() {
-    document.getElementById('home-info').style.display = 'none'; // Hide home info
-    document.getElementById('message-list').style.display = 'none'; // Hide message list
-    document.getElementById('message-form').style.display = 'none'; // Hide message form
-    document.getElementById('emoji-management').style.display = 'block'; // Show emoji management
-    document.querySelector('.sidebar').style.display = 'block'; // Show channels panel
+    document.getElementById('home-info').style.display = 'none';
+    document.getElementById('message-list').style.display = 'none';
+    document.getElementById('message-form').style.display = 'none';
+    document.getElementById('emoji-management').style.display = 'block';
+    document.querySelector('.sidebar').style.display = 'block';
 
     fetch('/get_emojis')
         .then(response => response.json())
@@ -38,7 +38,7 @@ function deleteEmoji(emojiId) {
         .then(data => {
             if (data.success) {
                 showSuccessMessage('Emoji deleted successfully');
-                showEmojiManagement(); // Refresh the emoji list
+                showEmojiManagement();
             } else {
                 showErrorMessage('Failed to delete emoji');
             }

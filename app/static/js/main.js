@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="content">${data.content}</div>
                 <div class="timestamp">${data.timestamp}</div>`;
             messageList.appendChild(messageElement);
-            messageList.scrollTop = messageList.scrollHeight; // Scroll to the bottom
+            messageList.scrollTop = messageList.scrollHeight;
         }
     });
 
@@ -103,7 +103,7 @@ function setupThemeToggle() {
 function setupFormSubmissions() {
     const form = document.querySelector('#message-form form');
     form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the form from submitting the traditional way
+        event.preventDefault();
 
         const formData = new FormData(form);
         const channelId = formData.get('channel_id');
@@ -129,9 +129,8 @@ function setupFormSubmissions() {
                       <div class="content">${message}</div>
                       <div class="timestamp">${data.timestamp}</div>`;
                   messageList.appendChild(messageElement);
-                  messageList.scrollTop = messageList.scrollHeight; // Scroll to the bottom
+                  messageList.scrollTop = messageList.scrollHeight;
 
-                  // Clear the message input
                   document.getElementById('message').value = '';
               } else {
                   showErrorMessage('Failed to send message');
@@ -165,7 +164,7 @@ function setupFormSubmissions() {
                   showSuccessMessage('Emoji uploaded successfully');
                   document.getElementById('emoji-file').value = '';
                   document.getElementById('emoji-name').value = '';
-                  showEmojiManagement(); // Refresh the emoji list
+                  showEmojiManagement();
               } else {
                   showErrorMessage(data.error || 'Failed to upload emoji');
               }

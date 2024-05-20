@@ -105,7 +105,7 @@ async def on_message(message):
         'color': str(role_color),
         'timestamp': message.created_at.strftime('%Y-%m-%d %H:%M:%S')
     }
-    from app import socketio  # Avoid circular import
+    from app import socketio #ugly but avoids circular import
     socketio.emit('new_message', data)
 
 def start_bot(app):
