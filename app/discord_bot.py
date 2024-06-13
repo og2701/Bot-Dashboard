@@ -1,7 +1,7 @@
 import discord
 import asyncio
 from threading import Thread
-from flask import current_app
+import os
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -111,7 +111,10 @@ async def on_message(message):
 def start_bot(app):
     def run_bot():
         with app.app_context():
-            token = current_app.config['DISCORD_TOKEN']
+            token = os.getenv('DISCORD_TOKEN')
+            if not token:
+                raise ValueError("No DISCORD_TOKEN found in environment variables")
             loop.run_until_complete(client.start(token))
+
     
     Thread(target=run_bot).start()
