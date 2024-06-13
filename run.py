@@ -30,4 +30,4 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
 
     discord_bot.start_bot(app)
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)
