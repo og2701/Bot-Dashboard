@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, current_app
 from .discord_bot import client, loop, get_guild_info, send_discord_message, fetch_messages, get_emojis, create_emoji, delete_emoji
 import asyncio
+from time import sleep
 
 main = Blueprint('main', __name__)
 
@@ -10,7 +11,7 @@ def index():
         return redirect(url_for('auth.login'))
 
     while not client.is_ready():
-        asyncio.sleep(1)
+        sleep(1)
 
     bot_name = client.user.name 
     bot_avatar_url = client.user.avatar.url
