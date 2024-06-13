@@ -22,8 +22,8 @@ while getopts ":p:" opt; do
 done
 
 if [ -z "$LOGIN_PASSWORD" ]; then
-    echo "Password is required."
-    usage
+    LOGIN_PASSWORD=$(uuidgen | tr -d '-' | head -c 8)
+    echo "No password provided. Generated default password: $LOGIN_PASSWORD"
 fi
 
 CONFIG_CONTENT=$(cat <<EOF
@@ -35,4 +35,4 @@ EOF
 
 echo "$CONFIG_CONTENT" > config.py
 
-echo "config.py has been generated with the provided password."
+echo "config.py has been generated."
