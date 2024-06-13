@@ -6,6 +6,8 @@ auth = Blueprint('auth', __name__)
 def login():
     if request.method == 'POST':
         password = request.form['password']
+        print(current_app.config['LOGIN_PASSWORD'])
+        print("PASSWORD ^")
         if password == current_app.config['LOGIN_PASSWORD']:
             session['logged_in'] = True
             return redirect(url_for('main.index'))
