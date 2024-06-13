@@ -13,6 +13,12 @@ intents.emojis = True
 client = discord.Client(intents=intents)
 loop = asyncio.get_event_loop()
 
+
+def stop_bot():
+    loop = asyncio.get_event_loop()
+    loop.create_task(client.close())
+    loop.stop()
+
 def get_guild_info(client, guild_id):
     guild = client.get_guild(guild_id)
     if not guild:
