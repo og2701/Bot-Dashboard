@@ -7,7 +7,7 @@ app = create_app()
 
 async def shutdown():
     print("Shutting down...")
-    
+
     discord_bot.stop_bot()
     
     socketio.stop()
@@ -17,11 +17,10 @@ async def shutdown():
         task.cancel()
 
     await asyncio.gather(*tasks, return_exceptions=True)
-    loop = asyncio.get_event_loop()
-    loop.stop()
 
 def shutdown_signal_handler(signal, frame):
-    asyncio.run(shutdown())
+    loop = asyncio.get_event_loop()
+    loop.create_task(shutdown())
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
