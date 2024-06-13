@@ -28,6 +28,7 @@ fi
 
 CONFIG_CONTENT=$(cat <<EOF
 class Config:
+    SECRET_KEY = 'secret!'
     GUILD_ID = 959493056242008184
     LOGIN_PASSWORD = '$LOGIN_PASSWORD'
 EOF
