@@ -2,15 +2,20 @@ from app import create_app, socketio, discord_bot
 import signal
 import sys
 import asyncio
+from flask import request
 
 app = create_app()
 
 async def shutdown():
     print("Shutting down...")
-    
+
     discord_bot.stop_bot()
-    
-    socketio.stop()
+
+    with app.app_context():
+        func = request.environ.get('werkzeug.server.shutdown')
+        if func is None:
+            raise RuntimeError('Not running with the Werkzeug Server')
+        func()
 
     tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
     for task in tasks:
