@@ -7,7 +7,7 @@ app = create_app()
 
 async def shutdown():
     print("Shutting down...")
-
+    
     discord_bot.stop_bot()
     
     socketio.stop()
