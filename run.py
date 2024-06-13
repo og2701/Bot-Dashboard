@@ -10,8 +10,10 @@ async def shutdown():
 
     discord_bot.stop_bot()
 
-    socketio.server.stop()
-    
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is not None:
+        func()
+
     tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
     for task in tasks:
         task.cancel()
