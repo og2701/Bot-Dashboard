@@ -62,18 +62,23 @@ async def send_discord_message(client, channel_id, message):
 
 def fetch_messages(client, channel_id, loop):
     channel = client.get_channel(channel_id)
-    messages = asyncio.run_coroutine_threadsafe(channel.history(limit=10).flatten(), loop).result()
-    result = []
-    for message in messages:
-        member = channel.guild.get_member(message.author.id)
-        role_color = member.top_role.color if member and member.top_role else discord.Color.default()
-        result.append({
-            'author': message.author.display_name,
-            'content': message.content,
-            'color': str(role_color),
-            'timestamp': message.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        })
-    return result
+    if channel:
+        async def get_history():
+            messages = []
+            async for message in channel.history(limit=10):
+                member = channel.guild.get_member(message.author.id)
+                role_color = member.top_role.color if member and member.top_role else discord.Color.default()
+                messages.append({
+                    'author': message.author.display_name,
+                    'content': message.content,
+                    'color': str(role_color),
+                    'timestamp': message.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                })
+            return messages
+
+        future = asyncio.run_coroutine_threadsafe(get_history(), loop)
+        return future.result()
+    return []
 
 def get_emojis(client, guild_id):
     guild = client.get_guild(guild_id)
